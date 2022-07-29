@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"../taskBuilder"
+	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
 
 type InputerTerm struct {

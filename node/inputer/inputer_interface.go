@@ -1,7 +1,7 @@
 package inputer
 
 import (
-	"../taskBuilder"
+	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
 
 type Inputer interface {
