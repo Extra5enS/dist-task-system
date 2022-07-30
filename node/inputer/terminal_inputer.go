@@ -8,11 +8,15 @@ import (
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
 
-type InputerTerm struct {
+type inputerTerm struct {
 	taskIdCount taskBuilder.TaskId
 }
 
-func (it InputerTerm) subStart(c chan taskBuilder.Task, end chan interface{}) {
+func NewInputerTerm() inputerTerm {
+	return inputerTerm{0}
+}
+
+func (it inputerTerm) subStart(c chan taskBuilder.Task, end chan interface{}) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		// scan
@@ -33,7 +37,7 @@ func (it InputerTerm) subStart(c chan taskBuilder.Task, end chan interface{}) {
 	end <- 0
 }
 
-func (it InputerTerm) Start() (chan taskBuilder.Task, chan interface{}, error) {
+func (it inputerTerm) Start() (chan taskBuilder.Task, chan interface{}, error) {
 	c := make(chan taskBuilder.Task)
 	end := make(chan interface{})
 	go it.subStart(c, end)
