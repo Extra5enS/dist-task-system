@@ -3,6 +3,11 @@ package taskBuilder
 // numder of task at a week
 type TaskId uint64
 
+type TaskOut struct {
+	t Task
+	e error
+}
+
 type Task struct {
 	TaskName string
 	TaskId   TaskId
