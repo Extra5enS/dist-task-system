@@ -1,7 +1,6 @@
 package inputer
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/Extra5enS/dist-task-system/node/inputer"
@@ -13,11 +12,8 @@ func TestFileInputer(t *testing.T) {
 	for {
 		select {
 		case task := <-c:
-			fmt.Print(task)
+			t.Log(task)
 		case <-end:
-			return
-		default:
-			t.Errorf("Unclear error")
 			return
 		}
 	}

@@ -17,9 +17,6 @@ func TestTerminalInputer(t *testing.T) {
 			fmt.Print(task)
 		case <-end:
 			break
-		default:
-			t.Errorf("Unclear error")
-			break
 		}
 	}
 }
