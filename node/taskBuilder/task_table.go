@@ -5,6 +5,9 @@ type TaskType string
 const (
 	ExtTaskType = "ExtTaskType" // this task should be with with exect
 	IntTaskType = "IntTaskType" // this task use golang func
+
+	Parallel    = "Parallel"
+	NonParallel = "NonParallel"
 )
 
 // numder of task at a week
@@ -22,13 +25,12 @@ type Task struct {
 }
 
 type TaskInfo struct {
-	Name     string
-	Type     TaskType
-	ArgCount int
-	Keys     []string
+	Name string
+	Type TaskType
+	Keys []string
 }
 
 var TaskTable = map[string]TaskInfo{
-	"hello": {"hello", IntTaskType, 0, []string{}},
-	"ls":    {"ls", ExtTaskType, 0, []string{}},
+	"hello": {"hello", IntTaskType, []string{}},
+	"ls":    {"ls", ExtTaskType, []string{}},
 }
