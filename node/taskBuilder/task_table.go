@@ -4,8 +4,8 @@ package taskBuilder
 type TaskId uint64
 
 type TaskOut struct {
-	t Task
-	e error
+	T Task
+	E error
 }
 
 type Task struct {

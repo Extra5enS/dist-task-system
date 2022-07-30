@@ -16,7 +16,7 @@ func NewInputerTerm() inputerTerm {
 	return inputerTerm{0}
 }
 
-func (it inputerTerm) subStart(c chan taskBuilder.Task, end chan interface{}) {
+func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{}) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		// scan
@@ -31,14 +31,14 @@ func (it inputerTerm) subStart(c chan taskBuilder.Task, end chan interface{}) {
 			Keys:     []string{},
 			Args:     command[1:],
 		}
-		c <- newTask
+		c <- taskBuilder.TaskOut{T: newTask, E: nil}
 	}
 	// End the thread
 	end <- 0
 }
 
-func (it inputerTerm) Start() (chan taskBuilder.Task, chan interface{}, error) {
-	c := make(chan taskBuilder.Task)
+func (it inputerTerm) Start() (chan taskBuilder.TaskOut, chan interface{}, error) {
+	c := make(chan taskBuilder.TaskOut)
 	end := make(chan interface{})
 	go it.subStart(c, end)
 	return c, end, nil

@@ -17,7 +17,7 @@ func NewInputerFile(fileName string) inputerFile {
 	return inputerFile{0, fileName}
 }
 
-func (it inputerFile) subStart(c chan taskBuilder.Task, end chan interface{}) {
+func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{}) {
 	file, err := os.Open(it.fileName)
 	if err != nil {
 		end <- 1
@@ -40,14 +40,14 @@ func (it inputerFile) subStart(c chan taskBuilder.Task, end chan interface{}) {
 			Keys:     []string{},
 			Args:     command[1:],
 		}
-		c <- newTask
+		c <- taskBuilder.TaskOut{T: newTask, E: nil}
 	}
 	// End the thread
 	end <- 0
 }
 
-func (it inputerFile) Start() (chan taskBuilder.Task, chan interface{}, error) {
-	c := make(chan taskBuilder.Task)
+func (it inputerFile) Start() (chan taskBuilder.TaskOut, chan interface{}, error) {
+	c := make(chan taskBuilder.TaskOut)
 	end := make(chan interface{})
 	go it.subStart(c, end)
 	return c, end, nil
