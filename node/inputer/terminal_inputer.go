@@ -30,7 +30,6 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		newTask := taskBuilder.Task{
 			TaskName: command[0],
 			TaskId:   it.taskIdCount,
-			Keys:     []string{},
 			Args:     command[1:],
 		}
 		c <- taskBuilder.TaskOut{T: newTask, E: nil}
