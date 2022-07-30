@@ -2,6 +2,7 @@ package inputer
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 
@@ -31,6 +32,7 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		// scan
 		command := strings.Split(scanner.Text(), " ")
 		if _, ok := taskBuilder.TaskTable[command[0]]; !ok {
+			c <- taskBuilder.TaskOut{E: fmt.Errorf("Unknowen task %s", command[0])}
 			continue
 		}
 		it.taskIdCount++
