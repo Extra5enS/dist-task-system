@@ -1,13 +1,16 @@
-package inputer
+package test
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/Extra5enS/dist-task-system/node/inputer"
 )
 
 func TestTerminalInputer(t *testing.T) {
-	it := InputerTerm{0}
+	it := inputer.NewInputerTerm()
 	c, end, _ := it.Start()
+	t.Logf("Write term")
 	for {
 		select {
 		case task := <-c:
