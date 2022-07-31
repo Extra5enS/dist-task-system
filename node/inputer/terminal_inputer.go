@@ -11,14 +11,19 @@ import (
 
 type inputerTerm struct {
 	taskIdCount taskBuilder.TaskId
+	ret         chan string
 }
 
 func NewInputerTerm() inputerTerm {
-	return inputerTerm{0}
+	return inputerTerm{
+		taskIdCount: 0,
+		ret:         make(chan string),
+	}
 }
 
 func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{}) {
 	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("user> ")
 	for scanner.Scan() {
 		// scan
 		command := strings.Split(scanner.Text(), " ")
@@ -33,6 +38,11 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			Args:     command[1:],
 		}
 		c <- taskBuilder.TaskOut{T: newTask, E: nil}
+
+		// wait answer
+		out := <-it.ret
+		fmt.Print(out)
+		fmt.Print("user> ")
 	}
 	// End the thread
 	end <- 0
@@ -43,4 +53,12 @@ func (it inputerTerm) Start() (chan taskBuilder.TaskOut, chan interface{}, error
 	end := make(chan interface{})
 	go it.subStart(c, end)
 	return c, end, nil
+}
+
+func (it inputerTerm) ReturnAns(ans string, e error) {
+	if e != nil {
+		it.ret <- e.Error()
+	} else {
+		it.ret <- ans
+	}
 }
