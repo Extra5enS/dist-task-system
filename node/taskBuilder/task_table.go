@@ -3,8 +3,9 @@ package taskBuilder
 type TaskType string
 
 const (
-	ExtTaskType = "ExtTaskType" // this task should be with with exect
+	ExtTaskType = "ExtTaskType"
 	IntTaskType = "IntTaskType" // this task use golang func
+	SysTaskType = "SysTaskType" // this task should be with with exect
 
 	Parallel    = "Parallel"
 	NonParallel = "NonParallel"
@@ -32,5 +33,6 @@ type TaskInfo struct {
 
 var TaskTable = map[string]TaskInfo{
 	"hello": {"hello", IntTaskType, []string{}},
-	"ls":    {"ls", ExtTaskType, []string{}},
+	"ls":    {"ls", SysTaskType, []string{}},
+	"dir":   {"dir", SysTaskType, []string{}},
 }

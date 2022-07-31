@@ -7,18 +7,21 @@ import (
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
 
-func taskExec(t taskBuilder.Task) error {
+func taskExec(t taskBuilder.Task) (string, error) {
 	var te taskBuilder.TaskExecutor
-	if taskBuilder.TaskTable[t.TaskName].Type == taskBuilder.IntTaskType {
+	switch taskBuilder.TaskTable[t.TaskName].Type {
+	case taskBuilder.IntTaskType:
 		te = taskBuilder.IntTaskExecutor{}
-	} else {
-		return fmt.Errorf("ExtTaskExecutor didn't impl")
+	case taskBuilder.ExtTaskType:
+		return "", fmt.Errorf("ExtTaskExecutor didn't impl")
+	case taskBuilder.SysTaskType:
+		te = taskBuilder.SysTaskExecutor{}
 	}
-	_, e := te.Exec(t.TaskName, t.Args)
+	out, e := te.Exec(t.TaskName, t.Args)
 	if e != nil {
-		return e
+		return out, e
 	} else {
-		return e
+		return out, e
 	}
 }
 
@@ -29,9 +32,10 @@ func main() {
 		select {
 		case task := <-c:
 			if task.E == nil {
-				taskExec(task.T)
+				out, e := taskExec(task.T)
+				it.ReturnAns(out, e)
 			} else {
-				fmt.Print(task.E, "\n")
+				it.ReturnAns("", task.E)
 			}
 		case <-end:
 			return
