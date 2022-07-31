@@ -33,6 +33,7 @@ type TaskInfo struct {
 
 var TaskTable = map[string]TaskInfo{
 	"hello": {"hello", IntTaskType, []string{}},
+	"sum":   {"sum", IntTaskType, []string{}},
 	"ls":    {"ls", SysTaskType, []string{}},
 	"dir":   {"dir", SysTaskType, []string{}},
 	//"cd":    {"cd", SysTaskType, []string{}},
