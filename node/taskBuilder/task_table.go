@@ -35,4 +35,9 @@ var TaskTable = map[string]TaskInfo{
 	"hello": {"hello", IntTaskType, []string{}},
 	"ls":    {"ls", SysTaskType, []string{}},
 	"dir":   {"dir", SysTaskType, []string{}},
+	//"cd":    {"cd", SysTaskType, []string{}},
+	"rm":    {"rm", SysTaskType, []string{}},
+	"mkdir": {"mkdir", SysTaskType, []string{}},
+	"cat":   {"cat", SysTaskType, []string{}},
+	"pwd":   {"pwd", SysTaskType, []string{}},
 }
