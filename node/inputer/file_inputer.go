@@ -44,9 +44,7 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		// scan
 		command := strings.Split(scanner.Text(), " ")
 		if _, ok := taskBuilder.TaskTable[command[0]]; !ok {
-			e := fmt.Errorf("Unknowen task %s", command[0])
-			c <- taskBuilder.TaskOut{E: e}
-			fmt.Fprint(res_file, e.Error()+"\n")
+			fmt.Fprintf(res_file, "Unknowen task %s\n", command[0])
 			continue
 		}
 		it.taskIdCount++

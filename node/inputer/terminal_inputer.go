@@ -27,8 +27,10 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 	for scanner.Scan() {
 		// scan
 		command := strings.Split(scanner.Text(), " ")
+
 		if _, ok := taskBuilder.TaskTable[command[0]]; !ok {
-			c <- taskBuilder.TaskOut{E: fmt.Errorf("Unknowen task %s", command[0])}
+			fmt.Printf("Unknowen task %s\n", command[0])
+			fmt.Print("user> ")
 			continue
 		}
 		it.taskIdCount++
@@ -38,7 +40,6 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			Args:     command[1:],
 		}
 		c <- taskBuilder.TaskOut{T: newTask, E: nil}
-
 		// wait answer
 		out := <-it.ret
 		fmt.Print(out)
