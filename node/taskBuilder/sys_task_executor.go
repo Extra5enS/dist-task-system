@@ -43,7 +43,12 @@ func execWin(name string, args []string) (string, error) {
 }
 
 func execLin(name string, args []string) (string, error) {
-	return "", fmt.Errorf("Not implemented")
+	cmd := exec.Command(name, args...)
+
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	return out.String(), err
 }
 
 func execMac(name string, args []string) (string, error) {
