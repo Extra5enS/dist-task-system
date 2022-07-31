@@ -42,7 +42,11 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		c <- taskBuilder.TaskOut{T: newTask, E: nil}
 		// wait answer
 		out := <-it.ret
+		// print result
 		fmt.Print(out)
+		if taskBuilder.TaskTable[command[0]].Type != taskBuilder.SysTaskType {
+			fmt.Println()
+		}
 		fmt.Print("user> ")
 	}
 	// End the thread
