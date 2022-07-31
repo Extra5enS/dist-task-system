@@ -30,12 +30,13 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		return
 	}
 	defer file.Close()
-	res_file, err := os.Open("res_" + it.fileName)
+
+	res_file, err := os.Create("res_" + it.fileName)
 	if err != nil {
 		end <- 1
 		return
 	}
-	defer file.Close()
+	defer res_file.Close()
 
 	scanner := bufio.NewScanner(file)
 
@@ -43,7 +44,9 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		// scan
 		command := strings.Split(scanner.Text(), " ")
 		if _, ok := taskBuilder.TaskTable[command[0]]; !ok {
-			c <- taskBuilder.TaskOut{E: fmt.Errorf("Unknowen task %s", command[0])}
+			e := fmt.Errorf("Unknowen task %s", command[0])
+			c <- taskBuilder.TaskOut{E: e}
+			fmt.Fprint(res_file, e.Error()+"\n")
 			continue
 		}
 		it.taskIdCount++
