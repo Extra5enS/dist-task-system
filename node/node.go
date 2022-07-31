@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/Extra5enS/dist-task-system/node/inputer"
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
@@ -35,7 +36,7 @@ func main() {
 				out, e := taskExec(task.T)
 				it.ReturnAns(out, e)
 			} else {
-				it.ReturnAns("", task.E)
+				log.Print(task.E)
 			}
 		case <-end:
 			return
