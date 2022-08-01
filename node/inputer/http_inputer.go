@@ -45,6 +45,11 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		c <- taskBuilder.TaskOut{T: newTask, E: nil}
 
 		out := <-it.ret
+
+		if taskBuilder.TaskTable[command].Type == taskBuilder.IntTaskType {
+			out = out + "\n"
+		}
+
 		log.Printf("Res: %v", out)
 		io.WriteString(w, out)
 	})
