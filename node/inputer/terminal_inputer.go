@@ -50,6 +50,7 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		fmt.Print("user> ")
 	}
 	// End the thread
+	fmt.Println()
 	end <- 0
 }
 
