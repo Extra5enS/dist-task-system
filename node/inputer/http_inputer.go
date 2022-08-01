@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
+	"log"
 	"net/http"
 	"strings"
 
@@ -29,29 +29,34 @@ const keyServerAddr = "serverAddr"
 func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{}) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		//ctx := r.Context()
-
+		ctx := r.Context()
+		log.Printf("%v\n", ctx)
 		command := r.URL.Query().Get("command")
-		args := r.URL.Query().Get("second")
+		args := r.URL.Query().Get("args")
 
 		newTask := taskBuilder.Task{
 			TaskName: command,
 			TaskId:   it.taskIdCount,
 			Args:     strings.Fields(args),
 		}
+		it.taskIdCount++
+
+		log.Printf("Task: %v", newTask)
 		c <- taskBuilder.TaskOut{T: newTask, E: nil}
 
 		out := <-it.ret
+		log.Printf("Res: %v", out)
 		io.WriteString(w, out)
 	})
-	ctx, cancelCtx := context.WithCancel(context.Background())
+	_, cancelCtx := context.WithCancel(context.Background())
 	server := &http.Server{
-		Addr:    ":4444",
-		Handler: mux,
-		BaseContext: func(l net.Listener) context.Context {
+		Addr:        ":4444",
+		Handler:     mux,
+		BaseContext: nil,
+		/*func(l net.Listener) context.Context {
 			ctx = context.WithValue(ctx, keyServerAddr, l.Addr().String())
 			return ctx
-		},
+		},*/
 	}
 	err := server.ListenAndServe()
 	if errors.Is(err, http.ErrServerClosed) {
@@ -71,5 +76,9 @@ func (it inputerHttp) Start() (chan taskBuilder.TaskOut, chan interface{}, error
 }
 
 func (it inputerHttp) ReturnAns(ans string, e error) {
-
+	if e != nil {
+		it.ret <- e.Error()
+	} else {
+		it.ret <- ans
+	}
 }

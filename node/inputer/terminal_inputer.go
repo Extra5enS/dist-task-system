@@ -33,12 +33,13 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			fmt.Print("user> ")
 			continue
 		}
-		it.taskIdCount++
 		newTask := taskBuilder.Task{
 			TaskName: command[0],
 			TaskId:   it.taskIdCount,
 			Args:     command[1:],
 		}
+		it.taskIdCount++
+
 		c <- taskBuilder.TaskOut{T: newTask, E: nil}
 		// wait answer
 		out := <-it.ret
