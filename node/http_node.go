@@ -7,8 +7,8 @@ import (
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
 
-func TermNode() {
-	it := inputer.NewInputerTerm()
+func HttpNode() {
+	it := inputer.NewInputerHttp()
 	c, end, _ := it.Start()
 	for {
 		select {
