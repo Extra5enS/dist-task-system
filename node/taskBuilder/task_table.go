@@ -18,14 +18,14 @@ type TaskOut struct {
 	T Task
 	E error
 
-	ret chan string
+	Ret chan string
 }
 
 func (t TaskOut) ReturnAns(ans string, e error) {
 	if e != nil {
-		t.ret <- e.Error()
+		t.Ret <- e.Error()
 	} else {
-		t.ret <- ans
+		t.Ret <- ans
 	}
 }
 
