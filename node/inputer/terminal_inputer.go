@@ -40,7 +40,7 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		}
 		it.taskIdCount++
 
-		c <- taskBuilder.TaskOut{T: newTask, E: nil, ret: it.ret}
+		c <- taskBuilder.TaskOut{T: newTask, E: nil, Ret: it.ret}
 		// wait answer
 		out := <-it.ret
 		// print result

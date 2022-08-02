@@ -53,7 +53,7 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			TaskId:   it.taskIdCount,
 			Args:     command[1:],
 		}
-		c <- taskBuilder.TaskOut{T: newTask, E: nil, ret: it.ret}
+		c <- taskBuilder.TaskOut{T: newTask, E: nil, Ret: it.ret}
 
 		out := <-it.ret
 		fmt.Fprint(res_file, out)

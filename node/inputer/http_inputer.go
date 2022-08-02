@@ -47,7 +47,7 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		it.taskIdCount++
 
 		log.Printf("Task: %v", newTask)
-		c <- taskBuilder.TaskOut{T: newTask, E: nil, ret: it.ret}
+		c <- taskBuilder.TaskOut{T: newTask, E: nil, Ret: it.ret}
 
 		out := <-it.ret
 
