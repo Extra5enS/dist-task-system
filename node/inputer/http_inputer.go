@@ -33,6 +33,11 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		log.Printf("%v\n", ctx)
 		command := r.URL.Query().Get("command")
 		args := r.URL.Query().Get("args")
+		// no command in request
+		if command == "" {
+			command = "hello"
+			args = ""
+		}
 
 		newTask := taskBuilder.Task{
 			TaskName: command,
@@ -50,7 +55,7 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			out = out + "\n"
 		}
 
-		log.Printf("Res: %v", out)
+		//log.Printf("Res: %v", out)
 		io.WriteString(w, out)
 	})
 	_, cancelCtx := context.WithCancel(context.Background())
