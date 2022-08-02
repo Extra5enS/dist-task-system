@@ -35,11 +35,8 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		args := r.URL.Query().Get("args")
 		// no command in request
 		if name == "" {
-			name = "hello"
-			args = ""
-		}
-
-		if _, ok := taskBuilder.TaskTable[name]; !ok {
+			io.WriteString(w, "No command")
+		} else if _, ok := taskBuilder.TaskTable[name]; !ok {
 			io.WriteString(w, "Unknowen command: "+name+" "+args)
 		} else {
 			newTask := it.gen.NewTask(name, strings.Fields(args))
@@ -53,13 +50,12 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 				out = out + "\n"
 			}
 
-			//log.Printf("Res: %v", out)
 			io.WriteString(w, out)
 		}
 	})
 	_, cancelCtx := context.WithCancel(context.Background())
 	server := &http.Server{
-		Addr:        ":4444",
+		Addr:        ":3333",
 		Handler:     mux,
 		BaseContext: nil,
 		/*func(l net.Listener) context.Context {
