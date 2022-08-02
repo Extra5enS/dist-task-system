@@ -17,6 +17,16 @@ type TaskId uint64
 type TaskOut struct {
 	T Task
 	E error
+
+	ret chan string
+}
+
+func (t TaskOut) ReturnAns(ans string, e error) {
+	if e != nil {
+		t.ret <- e.Error()
+	} else {
+		t.ret <- ans
+	}
 }
 
 type Task struct {

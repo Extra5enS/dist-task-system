@@ -19,7 +19,7 @@ func TermNode() {
 		case task := <-c:
 			if task.E == nil {
 				out, e := taskBuilder.TaskExec(task.T)
-				it.ReturnAns(out, e)
+				task.ReturnAns(out, e)
 			} else {
 				log.Print(task.E)
 			}

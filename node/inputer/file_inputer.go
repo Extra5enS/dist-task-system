@@ -53,7 +53,7 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			TaskId:   it.taskIdCount,
 			Args:     command[1:],
 		}
-		c <- taskBuilder.TaskOut{T: newTask, E: nil}
+		c <- taskBuilder.TaskOut{T: newTask, E: nil, ret: it.ret}
 
 		out := <-it.ret
 		fmt.Fprint(res_file, out)
@@ -65,12 +65,4 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 func (it inputerFile) Start(c chan taskBuilder.TaskOut, end chan interface{}) error {
 	go it.subStart(c, end)
 	return nil
-}
-
-func (it inputerFile) ReturnAns(ans string, e error) {
-	if e != nil {
-		it.ret <- e.Error()
-	} else {
-		it.ret <- ans
-	}
 }

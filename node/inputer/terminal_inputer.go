@@ -40,7 +40,7 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		}
 		it.taskIdCount++
 
-		c <- taskBuilder.TaskOut{T: newTask, E: nil}
+		c <- taskBuilder.TaskOut{T: newTask, E: nil, ret: it.ret}
 		// wait answer
 		out := <-it.ret
 		// print result
@@ -58,12 +58,4 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 func (it inputerTerm) Start(c chan taskBuilder.TaskOut, end chan interface{}) error {
 	go it.subStart(c, end)
 	return nil
-}
-
-func (it inputerTerm) ReturnAns(ans string, e error) {
-	if e != nil {
-		it.ret <- e.Error()
-	} else {
-		it.ret <- ans
-	}
 }
