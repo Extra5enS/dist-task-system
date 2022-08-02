@@ -4,11 +4,14 @@ import (
 	"testing"
 
 	"github.com/Extra5enS/dist-task-system/node/inputer"
+	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
 
 func TestFileInputer(t *testing.T) {
 	it := inputer.NewInputerFile("test.txt")
-	c, end, _ := it.Start()
+	c := make(chan taskBuilder.TaskOut)
+	end := make(chan interface{})
+	it.Start(c, end)
 	for {
 		select {
 		case task := <-c:

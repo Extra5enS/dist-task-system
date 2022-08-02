@@ -62,11 +62,9 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 	end <- 0
 }
 
-func (it inputerFile) Start() (chan taskBuilder.TaskOut, chan interface{}, error) {
-	c := make(chan taskBuilder.TaskOut)
-	end := make(chan interface{})
+func (it inputerFile) Start(c chan taskBuilder.TaskOut, end chan interface{}) error {
 	go it.subStart(c, end)
-	return c, end, nil
+	return nil
 }
 
 func (it inputerFile) ReturnAns(ans string, e error) {

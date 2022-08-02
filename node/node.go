@@ -5,11 +5,15 @@ import (
 
 	"github.com/Extra5enS/dist-task-system/node/inputer"
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
+	"github.com/Extra5enS/dist-task-system/node/utilities"
 )
 
 func TermNode() {
 	it := inputer.NewInputerTerm()
-	c, end, _ := it.Start()
+	c := make(chan taskBuilder.TaskOut)
+	end := make(chan interface{})
+	counter := utilities.NewCounter(1)
+	it.Start(c, end)
 	for {
 		select {
 		case task := <-c:
@@ -20,7 +24,9 @@ func TermNode() {
 				log.Print(task.E)
 			}
 		case <-end:
-			return
+			if counter.IsFinish() {
+				return
+			}
 		}
 	}
 }

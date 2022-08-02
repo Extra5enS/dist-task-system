@@ -78,11 +78,9 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 	end <- 0
 }
 
-func (it inputerHttp) Start() (chan taskBuilder.TaskOut, chan interface{}, error) {
-	c := make(chan taskBuilder.TaskOut)
-	end := make(chan interface{})
+func (it inputerHttp) Start(c chan taskBuilder.TaskOut, end chan interface{}) error {
 	go it.subStart(c, end)
-	return c, end, nil
+	return nil
 }
 
 func (it inputerHttp) ReturnAns(ans string, e error) {
