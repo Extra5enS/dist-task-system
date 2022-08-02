@@ -10,16 +10,16 @@ import (
 )
 
 type inputerFile struct {
-	taskIdCount taskBuilder.TaskId
-	fileName    string
-	ret         chan string
+	gen      taskBuilder.TaskGenerator
+	fileName string
+	ret      chan string
 }
 
 func NewInputerFile(fileName string) inputerFile {
 	return inputerFile{
-		taskIdCount: 0,
-		fileName:    fileName,
-		ret:         make(chan string),
+		gen:      taskBuilder.NewTaskGenerator(),
+		fileName: fileName,
+		ret:      make(chan string),
 	}
 }
 
@@ -47,13 +47,8 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			fmt.Fprintf(res_file, "Unknowen task %s\n", command[0])
 			continue
 		}
-		it.taskIdCount++
-		newTask := taskBuilder.Task{
-			TaskName: command[0],
-			TaskId:   it.taskIdCount,
-			Args:     command[1:],
-		}
-		c <- taskBuilder.TaskOut{T: newTask, E: nil, Ret: it.ret}
+		newTask := it.gen.NewTask(command[0], command[1:])
+		c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
 
 		out := <-it.ret
 		fmt.Fprint(res_file, out)

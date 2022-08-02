@@ -10,14 +10,14 @@ import (
 )
 
 type inputerTerm struct {
-	taskIdCount taskBuilder.TaskId
-	ret         chan string
+	gen taskBuilder.TaskGenerator
+	ret chan string
 }
 
 func NewInputerTerm() inputerTerm {
 	return inputerTerm{
-		taskIdCount: 0,
-		ret:         make(chan string),
+		gen: taskBuilder.NewTaskGenerator(),
+		ret: make(chan string),
 	}
 }
 
@@ -33,14 +33,8 @@ func (it inputerTerm) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			fmt.Print("user> ")
 			continue
 		}
-		newTask := taskBuilder.Task{
-			TaskName: command[0],
-			TaskId:   it.taskIdCount,
-			Args:     command[1:],
-		}
-		it.taskIdCount++
-
-		c <- taskBuilder.TaskOut{T: newTask, E: nil, Ret: it.ret}
+		newTask := it.gen.NewTask(command[0], command[1:])
+		c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
 		// wait answer
 		out := <-it.ret
 		// print result

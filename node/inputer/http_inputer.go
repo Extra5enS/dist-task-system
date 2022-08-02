@@ -13,14 +13,14 @@ import (
 )
 
 type inputerHttp struct {
-	taskIdCount taskBuilder.TaskId
-	ret         chan string
+	gen taskBuilder.TaskGenerator
+	ret chan string
 }
 
 func NewInputerHttp() inputerHttp {
 	return inputerHttp{
-		taskIdCount: 0,
-		ret:         make(chan string),
+		gen: taskBuilder.NewTaskGenerator(),
+		ret: make(chan string),
 	}
 }
 
@@ -31,27 +31,22 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		log.Printf("%v\n", ctx)
-		command := r.URL.Query().Get("command")
+		name := r.URL.Query().Get("name")
 		args := r.URL.Query().Get("args")
 		// no command in request
-		if command == "" {
-			command = "hello"
+		if name == "" {
+			name = "hello"
 			args = ""
 		}
 
-		newTask := taskBuilder.Task{
-			TaskName: command,
-			TaskId:   it.taskIdCount,
-			Args:     strings.Fields(args),
-		}
-		it.taskIdCount++
+		newTask := it.gen.NewTask(name, strings.Fields(args))
 
 		log.Printf("Task: %v", newTask)
-		c <- taskBuilder.TaskOut{T: newTask, E: nil, Ret: it.ret}
+		c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
 
 		out := <-it.ret
 
-		if taskBuilder.TaskTable[command].Type == taskBuilder.IntTaskType {
+		if taskBuilder.TaskTable[name].Type == taskBuilder.IntTaskType {
 			out = out + "\n"
 		}
 

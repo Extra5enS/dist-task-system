@@ -8,7 +8,7 @@ type TaskExecutor interface {
 
 func TaskExec(t Task) (string, error) {
 	var te TaskExecutor
-	switch TaskTable[t.TaskName].Type {
+	switch TaskTable[t.Name].Type {
 	case IntTaskType:
 		te = IntTaskExecutor{}
 	case ExtTaskType:
@@ -16,7 +16,7 @@ func TaskExec(t Task) (string, error) {
 	case SysTaskType:
 		te = SysTaskExecutor{}
 	}
-	out, e := te.Exec(t.TaskName, t.Args)
+	out, e := te.Exec(t.Name, t.Args)
 	if e != nil {
 		return out, e
 	} else {
