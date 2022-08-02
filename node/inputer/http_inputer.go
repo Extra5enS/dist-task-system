@@ -39,19 +39,23 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			args = ""
 		}
 
-		newTask := it.gen.NewTask(name, strings.Fields(args))
+		if _, ok := taskBuilder.TaskTable[name]; !ok {
+			io.WriteString(w, "Unknowen command: "+name+" "+args)
+		} else {
+			newTask := it.gen.NewTask(name, strings.Fields(args))
 
-		log.Printf("Task: %v", newTask)
-		c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
+			log.Printf("Task: %v", newTask)
+			c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
 
-		out := <-it.ret
+			out := <-it.ret
 
-		if taskBuilder.TaskTable[name].Type == taskBuilder.IntTaskType {
-			out = out + "\n"
+			if taskBuilder.TaskTable[name].Type == taskBuilder.IntTaskType {
+				out = out + "\n"
+			}
+
+			//log.Printf("Res: %v", out)
+			io.WriteString(w, out)
 		}
-
-		//log.Printf("Res: %v", out)
-		io.WriteString(w, out)
 	})
 	_, cancelCtx := context.WithCancel(context.Background())
 	server := &http.Server{
