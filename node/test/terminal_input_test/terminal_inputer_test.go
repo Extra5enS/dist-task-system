@@ -5,11 +5,14 @@ import (
 	"testing"
 
 	"github.com/Extra5enS/dist-task-system/node/inputer"
+	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
 
 func TestTerminalInputer(t *testing.T) {
 	it := inputer.NewInputerTerm()
-	c, end, _ := it.Start()
+	c := make(chan taskBuilder.TaskOut)
+	end := make(chan interface{})
+	it.Start(c, end)
 	t.Logf("Write term")
 	for {
 		select {
