@@ -14,11 +14,41 @@ const (
 // numder of task at a week
 type TaskId uint64
 
+type TaskGenerator struct {
+	counter TaskId
+}
+
+func NewTaskGenerator() TaskGenerator {
+	return TaskGenerator{counter: 0}
+}
+
+type Task struct {
+	Name string
+	Args []string
+
+	TaskId TaskId
+}
+
+func (tg TaskGenerator) NewTask(name string, args []string) Task {
+	t := Task{
+		Name: name,
+		Args: args,
+
+		TaskId: tg.counter,
+	}
+	tg.counter++
+	return t
+}
+
 type TaskOut struct {
 	T Task
 	E error
 
 	Ret chan string
+}
+
+func NewTaskOut(t Task, e error, ret chan string) TaskOut {
+	return TaskOut{T: t, E: e, Ret: ret}
 }
 
 func (t TaskOut) ReturnAns(ans string, e error) {
@@ -27,12 +57,6 @@ func (t TaskOut) ReturnAns(ans string, e error) {
 	} else {
 		t.Ret <- ans
 	}
-}
-
-type Task struct {
-	TaskName string
-	TaskId   TaskId
-	Args     []string
 }
 
 type TaskInfo struct {
