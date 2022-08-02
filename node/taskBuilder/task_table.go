@@ -23,7 +23,7 @@ type TaskOut struct {
 
 func (t TaskOut) ReturnAns(ans string, e error) {
 	if e != nil {
-		t.Ret <- e.Error()
+		t.Ret <- ans
 	} else {
 		t.Ret <- ans
 	}
