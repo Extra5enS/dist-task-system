@@ -10,21 +10,49 @@ import (
 	"strings"
 
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
+	"github.com/go-yaml/yaml"
 )
 
 type inputerHttp struct {
-	gen taskBuilder.TaskGenerator
-	ret chan string
+	gen    taskBuilder.TaskGenerator
+	ret    chan string
+	server *http.Server
 }
 
-func NewInputerHttp() inputerHttp {
+func NewInputerHttp(conf io.Reader) (inputerHttp, error) {
+	/*
+		conf - yaml byte array that contain info about Http server
+	*/
+
+	mapConf := map[string]string{}
+	decoder := yaml.NewDecoder(conf)
+	if err := decoder.Decode(mapConf); err != nil {
+		return inputerHttp{}, err
+	}
+
+	var (
+		addr string
+		ok   bool
+	)
+
+	if addr, ok = mapConf["addr"]; !ok {
+		return inputerHttp{}, fmt.Errorf("no address config")
+	}
+
 	return inputerHttp{
 		gen: taskBuilder.NewTaskGenerator(),
 		ret: make(chan string),
-	}
+		server: &http.Server{
+			Addr:        addr,
+			Handler:     nil,
+			BaseContext: nil,
+			/*func(l net.Listener) context.Context {
+				ctx = context.WithValue(ctx, keyServerAddr, l.Addr().String())
+				return ctx
+			},*/
+		},
+	}, nil
 }
-
-const keyServerAddr = "serverAddr"
 
 func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{}) {
 	mux := http.NewServeMux()
@@ -53,17 +81,11 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			io.WriteString(w, out)
 		}
 	})
+
 	_, cancelCtx := context.WithCancel(context.Background())
-	server := &http.Server{
-		Addr:        ":3333",
-		Handler:     mux,
-		BaseContext: nil,
-		/*func(l net.Listener) context.Context {
-			ctx = context.WithValue(ctx, keyServerAddr, l.Addr().String())
-			return ctx
-		},*/
-	}
-	err := server.ListenAndServe()
+	it.server.Handler = mux
+
+	err := it.server.ListenAndServe()
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server one closed\n")
 	} else if err != nil {

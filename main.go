@@ -4,5 +4,5 @@ import "github.com/Extra5enS/dist-task-system/node"
 
 func main() {
 	//node.TermNode()
-	node.HttpNode()
+	node.HttpNode("./config/conf.yaml")
 }
