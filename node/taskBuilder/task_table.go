@@ -66,16 +66,16 @@ type TaskInfo struct {
 }
 
 var TaskTable = map[string]TaskInfo{
-	"hello": {"hello", IntTaskType, []string{}},
-	"sum":   {"sum", IntTaskType, []string{}},
-	"ls":    {"ls", SysTaskType, []string{}},
-	"dir":   {"dir", SysTaskType, []string{}},
-	//"cd":    {"cd", SysTaskType, []string{}},
-	"rm":     {"rm", SysTaskType, []string{}},
-	"mkdir":  {"mkdir", SysTaskType, []string{}},
-	"cat":    {"cat", SysTaskType, []string{}},
-	"pwd":    {"pwd", SysTaskType, []string{}},
-	"echo":   {"echo", SysTaskType, []string{}},
-	"export": {"export", SysTaskType, []string{}},
-	"env":    {"env", SysTaskType, []string{}},
+	"hello":    {"hello", IntTaskType, []string{}},
+	"sum":      {"sum", IntTaskType, []string{}},
+	"ls":       {"ls", SysTaskType, []string{}},
+	"dir":      {"dir", SysTaskType, []string{}},
+	"rm":       {"rm", SysTaskType, []string{}},
+	"mkdir":    {"mkdir", SysTaskType, []string{}},
+	"cat":      {"cat", SysTaskType, []string{}},
+	"pwd":      {"pwd", SysTaskType, []string{}},
+	"echo":     {"echo", SysTaskType, []string{}},
+	"export":   {"export", SysTaskType, []string{}},
+	"env":      {"env", SysTaskType, []string{}},
+	"forevery": {"forevery", ExtTaskType, []string{}},
 }

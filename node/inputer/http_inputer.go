@@ -79,7 +79,7 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 				out = out + "\n"
 			}
 
-			io.WriteString(w, out)
+			io.WriteString(w, fmt.Sprintf(`%s`, out))
 		}
 	})
 
