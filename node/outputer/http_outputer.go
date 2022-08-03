@@ -2,13 +2,12 @@ package outputer
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 
-	"gopkg.in/yaml.v2"
+	"github.com/Extra5enS/dist-task-system/node/utilities"
 )
 
 type outputerHttp struct {
@@ -16,33 +15,9 @@ type outputerHttp struct {
 	out      chan string
 }
 
-func NewOutputerHttp(conf io.Reader) (outputerHttp, error) {
-
-	mapConf := map[string]interface{}{}
-	decoder := yaml.NewDecoder(conf)
-	if err := decoder.Decode(mapConf); err != nil {
-		return outputerHttp{}, err
-	}
-
-	addrs := make([]string, 0)
-
-	if addrs_int, ok := mapConf["addrs"]; ok {
-		int_array, ok := addrs_int.([]interface{})
-		if !ok {
-			return outputerHttp{}, fmt.Errorf("no address config")
-		} else {
-			for i, addr_int := range int_array {
-				addr, ok := addr_int.(string)
-				if !ok {
-					return outputerHttp{}, fmt.Errorf("wrong arrdes #%d", i)
-				}
-				addrs = append(addrs, addr)
-			}
-		}
-	}
-
+func NewOutputerHttp(conf utilities.ServerConfig) (outputerHttp, error) {
 	return outputerHttp{
-		outAddrs: addrs,
+		outAddrs: conf.ExtAddrs,
 		out:      make(chan string),
 	}, nil
 }

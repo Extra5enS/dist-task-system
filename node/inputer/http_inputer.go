@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
-	"github.com/go-yaml/yaml"
+	"github.com/Extra5enS/dist-task-system/node/utilities"
 )
 
 type inputerHttp struct {
@@ -19,29 +19,20 @@ type inputerHttp struct {
 	server *http.Server
 }
 
-func NewInputerHttp(conf io.Reader) (inputerHttp, error) {
+func NewInputerHttp(conf utilities.ServerConfig) (inputerHttp, error) {
 	/*
 		conf - yaml byte array that contain info about Http server
 	*/
 
-	mapConf := map[string]interface{}{}
-	decoder := yaml.NewDecoder(conf)
-	if err := decoder.Decode(mapConf); err != nil {
-		return inputerHttp{}, err
-	}
-
-	var addr string
-	if addr_int, ok := mapConf["addr"]; !ok {
-		return inputerHttp{}, fmt.Errorf("no address config")
-	} else if addr, ok = addr_int.(string); !ok {
-		return inputerHttp{}, fmt.Errorf("wrong config file")
+	if conf.MyAddr == "" {
+		return inputerHttp{}, fmt.Errorf("no addr")
 	}
 
 	return inputerHttp{
 		gen: taskBuilder.NewTaskGenerator(),
 		ret: make(chan string),
 		server: &http.Server{
-			Addr:        addr,
+			Addr:        conf.MyAddr,
 			Handler:     nil,
 			BaseContext: nil,
 			/*func(l net.Listener) context.Context {
