@@ -2,6 +2,7 @@ package taskBuilder
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Extra5enS/dist-task-system/node/outputer"
 )
@@ -16,17 +17,24 @@ func NewExtTaskExecutor(oph outputer.Outputer) ExtTaskExecutor {
 	}
 }
 
-func (ite ExtTaskExecutor) Exec(task Task) ([]string, error) {
-	if exfun, ok := ExtTaskExecutionTable[task.Name]; !ok {
-		return []string{}, fmt.Errorf("Unknowen command name")
+func (ite ExtTaskExecutor) Exec(name string, args []string) (string, error) {
+	if ite.oph == nil {
+		return "", fmt.Errorf("unvalid ouptuter")
+	}
+	if exfun, ok := ExtTaskExecutionTable[name]; !ok {
+		return "", fmt.Errorf("Unknowen command name")
 	} else {
-		return exfun(ite.oph, task)
+		return exfun(ite.oph, args)
 	}
 }
 
-var ExtTaskExecutionTable = map[string](func(o outputer.Outputer, task Task) ([]string, error)){
-	"forevery": func(o outputer.Outputer, task Task) ([]string, error) {
-		o.Get(task.Name, task.Args)
-		return []string{}, nil
+var ExtTaskExecutionTable = map[string](func(o outputer.Outputer, args []string) (string, error)){
+	"forevery": func(o outputer.Outputer, args []string) (string, error) {
+		out := o.Get(args[0], args[1:])
+		anss := make([]string, 0)
+		for i := 0; i < o.AnsCount(); i++ {
+			anss = append(anss, <-out)
+		}
+		return strings.Join(anss, " "), nil
 	},
 }

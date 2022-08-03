@@ -24,19 +24,17 @@ func NewInputerHttp(conf io.Reader) (inputerHttp, error) {
 		conf - yaml byte array that contain info about Http server
 	*/
 
-	mapConf := map[string]string{}
+	mapConf := map[string]interface{}{}
 	decoder := yaml.NewDecoder(conf)
 	if err := decoder.Decode(mapConf); err != nil {
 		return inputerHttp{}, err
 	}
 
-	var (
-		addr string
-		ok   bool
-	)
-
-	if addr, ok = mapConf["addr"]; !ok {
+	var addr string
+	if addr_int, ok := mapConf["addr"]; !ok {
 		return inputerHttp{}, fmt.Errorf("no address config")
+	} else if addr, ok = addr_int.(string); !ok {
+		return inputerHttp{}, fmt.Errorf("wrong config file")
 	}
 
 	return inputerHttp{

@@ -24,16 +24,20 @@ func NewOutputerHttp(conf io.Reader) (outputerHttp, error) {
 		return outputerHttp{}, err
 	}
 
-	var (
-		addrs []string
-	)
+	addrs := make([]string, 0)
 
-	if addrs_int, ok := mapConf["addrs"]; !ok {
-		return outputerHttp{}, fmt.Errorf("no address config")
-	} else {
-		addrs, ok = addrs_int.([]string)
+	if addrs_int, ok := mapConf["addrs"]; ok {
+		int_array, ok := addrs_int.([]interface{})
 		if !ok {
 			return outputerHttp{}, fmt.Errorf("no address config")
+		} else {
+			for i, addr_int := range int_array {
+				addr, ok := addr_int.(string)
+				if !ok {
+					return outputerHttp{}, fmt.Errorf("wrong arrdes #%d", i)
+				}
+				addrs = append(addrs, addr)
+			}
 		}
 	}
 
@@ -41,6 +45,10 @@ func NewOutputerHttp(conf io.Reader) (outputerHttp, error) {
 		outAddrs: addrs,
 		out:      make(chan string),
 	}, nil
+}
+
+func (oh outputerHttp) AnsCount() int {
+	return len(oh.outAddrs)
 }
 
 func (oh outputerHttp) Get(name string, args []string) chan string {

@@ -1,18 +1,20 @@
 package taskBuilder
 
-import "fmt"
+import (
+	"github.com/Extra5enS/dist-task-system/node/outputer"
+)
 
 type TaskExecutor interface {
 	Exec(name string, args []string) (string, error)
 }
 
-func TaskExec(t Task) (string, error) {
+func TaskExec(t Task, o outputer.Outputer) (string, error) {
 	var te TaskExecutor
 	switch TaskTable[t.Name].Type {
 	case IntTaskType:
 		te = IntTaskExecutor{}
 	case ExtTaskType:
-		return "", fmt.Errorf("ExtTaskExecutor didn't impl")
+		te = NewExtTaskExecutor(o)
 	case SysTaskType:
 		te = SysTaskExecutor{}
 	}
