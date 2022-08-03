@@ -61,8 +61,9 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		log.Printf("%v\n", ctx)
 		name := r.URL.Query().Get("name")
 		args := r.URL.Query().Get("args")
-		// no command in request
+
 		if name == "" {
+			// no command in request
 			io.WriteString(w, "No command")
 		} else if _, ok := taskBuilder.TaskTable[name]; !ok {
 			io.WriteString(w, "Unknowen command: "+name+" "+args)

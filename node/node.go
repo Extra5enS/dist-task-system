@@ -16,12 +16,12 @@ func TermNode() {
 	it.Start(c, end)
 	for {
 		select {
-		case task := <-c:
-			if task.E == nil {
-				out, e := taskBuilder.TaskExec(task.T)
-				task.ReturnAns(out, e)
+		case taskOut := <-c:
+			if taskOut.E == nil {
+				out, e := taskBuilder.TaskExec(taskOut.T)
+				taskOut.ReturnAns(out, e)
 			} else {
-				log.Print(task.E)
+				log.Print(taskOut.E)
 			}
 		case <-end:
 			if counter.IsFinish() {
