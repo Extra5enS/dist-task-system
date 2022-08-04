@@ -2,7 +2,6 @@ package node
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/Extra5enS/dist-task-system/node/inputer"
@@ -13,10 +12,13 @@ import (
 )
 
 type httpNode struct {
-	conf    utilities.ServerConfig
-	c       chan taskBuilder.TaskOut
-	end     chan interface{}
-	counter utilities.Counter
+	conf utilities.ServerConfig
+	li   []inputer.Inputer
+	o    outputer.Outputer
+	tw   taskBuilder.TaskWorker
+
+	in  chan taskBuilder.TaskOut
+	end chan interface{}
 }
 
 func NewHttpNode(conf_name string) (httpNode, error) {
@@ -32,39 +34,31 @@ func NewHttpNode(conf_name string) (httpNode, error) {
 	}
 	f.Close()
 
-	hn.c = make(chan taskBuilder.TaskOut)
+	hn.in = make(chan taskBuilder.TaskOut)
 	hn.end = make(chan interface{})
-	hn.counter = utilities.NewCounter(1)
+
+	// Create inputer
+	it, err := inputer.NewInputerHttp(hn.conf)
+	if err != nil {
+		fmt.Println(err)
+		return httpNode{}, err
+	}
+	hn.li = append(hn.li, it)
+
+	// Create outputer
+	hn.o, err = outputer.NewOutputerHttp(hn.conf)
+	if err != nil {
+		fmt.Println(err)
+		return httpNode{}, err
+	}
+
+	// Create last
+	hn.tw = taskBuilder.NewTaskWorker(hn.in, hn.end, 1, hn.o)
+
 	return hn, nil
 }
 
 func (n httpNode) Start() {
-	it, err := inputer.NewInputerHttp(n.conf)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	outputer, err := outputer.NewOutputerHttp(n.conf)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	it.Start(n.c, n.end)
-	for {
-		select {
-		case task := <-n.c:
-			if task.E == nil {
-				out, e := taskBuilder.TaskExec(task.T, outputer)
-				task.ReturnAns(out, e)
-			} else {
-				log.Print(task.E)
-			}
-		case <-n.end:
-			if n.counter.IsFinish() {
-				return
-			}
-		}
-	}
+	n.li[0].Start(n.in, n.end)
+	n.tw.Start()
 }

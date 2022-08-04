@@ -29,7 +29,7 @@ func (ite ExtTaskExecutor) Exec(name string, args []string) (string, error) {
 }
 
 var ExtTaskExecutionTable = map[string](func(o outputer.Outputer, args []string) (string, error)){
-	"forevery": func(o outputer.Outputer, args []string) (string, error) {
+	"foreach": func(o outputer.Outputer, args []string) (string, error) {
 		out := o.Get(args[0], args[1:])
 		anss := make([]string, 0)
 		for i := 0; i < o.AnsCount(); i++ {
