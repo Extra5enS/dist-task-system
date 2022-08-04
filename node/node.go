@@ -18,8 +18,7 @@ func TermNode() {
 		select {
 		case taskOut := <-c:
 			if taskOut.E == nil {
-				out, e := taskBuilder.TaskExec(taskOut.T, nil)
-				taskOut.ReturnAns(out, e)
+				taskBuilder.TaskExec(taskOut, nil)
 			} else {
 				log.Print(taskOut.E)
 			}

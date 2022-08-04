@@ -12,15 +12,15 @@ type SysTaskExecutor struct {
 	// Add something here
 }
 
-func (ste SysTaskExecutor) Exec(name string, args []string) (string, error) {
+func (ste SysTaskExecutor) Exec(t Task) (string, error) {
 	os := runtime.GOOS
 	switch os {
 	case "windows":
-		return execWin(name, args)
+		return execWin(t.Name, t.Args)
 	case "darwin":
-		return execMac(name, args)
+		return execMac(t.Name, t.Args)
 	case "linux":
-		return execLin(name, args)
+		return execLin(t.Name, t.Args)
 	default:
 		return "", fmt.Errorf("Not implemented")
 	}

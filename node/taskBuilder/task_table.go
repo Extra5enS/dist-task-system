@@ -26,15 +26,17 @@ type Task struct {
 	Name string
 	Args []string
 
-	TaskId TaskId
+	TaskId     TaskId
+	IncomeAddr string
 }
 
-func (tg TaskGenerator) NewTask(name string, args []string) Task {
+func (tg TaskGenerator) NewTask(name string, args []string, addr string) Task {
 	t := Task{
 		Name: name,
 		Args: args,
 
-		TaskId: tg.counter,
+		TaskId:     tg.counter,
+		IncomeAddr: addr,
 	}
 	tg.counter++
 	return t

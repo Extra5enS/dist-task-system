@@ -17,20 +17,20 @@ func NewExtTaskExecutor(oph outputer.Outputer) ExtTaskExecutor {
 	}
 }
 
-func (ite ExtTaskExecutor) Exec(name string, args []string) (string, error) {
+func (ite ExtTaskExecutor) Exec(t Task) (string, error) {
 	if ite.oph == nil {
 		return "", fmt.Errorf("unvalid ouptuter")
 	}
-	if exfun, ok := ExtTaskExecutionTable[name]; !ok {
+	if exfun, ok := ExtTaskExecutionTable[t.Name]; !ok {
 		return "", fmt.Errorf("Unknowen command name")
 	} else {
-		return exfun(ite.oph, args)
+		return exfun(ite.oph, t)
 	}
 }
 
-var ExtTaskExecutionTable = map[string](func(o outputer.Outputer, args []string) (string, error)){
-	"foreach": func(o outputer.Outputer, args []string) (string, error) {
-		out := o.Get(args[0], args[1:])
+var ExtTaskExecutionTable = map[string](func(o outputer.Outputer, t Task) (string, error)){
+	"foreach": func(o outputer.Outputer, t Task) (string, error) {
+		out := o.Get(t.Args[0], t.Args[1:], t.IncomeAddr)
 		anss := make([]string, 0)
 		for i := 0; i < o.AnsCount(); i++ {
 			anss = append(anss, <-out)

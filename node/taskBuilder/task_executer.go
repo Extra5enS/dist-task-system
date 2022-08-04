@@ -8,25 +8,23 @@ import (
 )
 
 type TaskExecutor interface {
-	Exec(name string, args []string) (string, error)
+	Exec(t Task) (string, error)
 }
 
-func TaskExec(t Task, o outputer.Outputer) (string, error) {
-	var te TaskExecutor
-	switch TaskTable[t.Name].Type {
-	case IntTaskType:
-		te = IntTaskExecutor{}
-	case ExtTaskType:
-		te = NewExtTaskExecutor(o)
-	case SysTaskType:
-		te = SysTaskExecutor{}
-	}
-	out, e := te.Exec(t.Name, t.Args)
-	if e != nil {
-		return out, e
-	} else {
-		return out, e
-	}
+func TaskExec(t TaskOut, o outputer.Outputer) {
+	go func() {
+		var te TaskExecutor
+		switch TaskTable[t.T.Name].Type {
+		case IntTaskType:
+			te = IntTaskExecutor{}
+		case ExtTaskType:
+			te = NewExtTaskExecutor(o)
+		case SysTaskType:
+			te = SysTaskExecutor{}
+		}
+		out, e := te.Exec(t.T)
+		t.ReturnAns(out, e)
+	}()
 }
 
 //
@@ -51,8 +49,7 @@ func (tw TaskWorker) Start() {
 		select {
 		case task := <-tw.in:
 			if task.E == nil {
-				out, e := TaskExec(task.T, tw.o)
-				task.ReturnAns(out, e)
+				TaskExec(task, tw.o)
 			} else {
 				log.Print(task.E)
 			}

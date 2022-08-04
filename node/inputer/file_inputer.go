@@ -47,7 +47,7 @@ func (it inputerFile) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			fmt.Fprintf(res_file, "Unknowen task %s\n", command[0])
 			continue
 		}
-		newTask := it.gen.NewTask(command[0], command[1:])
+		newTask := it.gen.NewTask(command[0], command[1:], "")
 		c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
 
 		out := <-it.ret

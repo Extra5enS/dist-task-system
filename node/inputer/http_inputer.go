@@ -15,7 +15,6 @@ import (
 
 type inputerHttp struct {
 	gen    taskBuilder.TaskGenerator
-	ret    chan string
 	server *http.Server
 }
 
@@ -30,7 +29,6 @@ func NewInputerHttp(conf utilities.ServerConfig) (inputerHttp, error) {
 
 	return inputerHttp{
 		gen: taskBuilder.NewTaskGenerator(),
-		ret: make(chan string),
 		server: &http.Server{
 			Addr:        conf.MyAddr,
 			Handler:     nil,
@@ -50,6 +48,7 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		log.Printf("%v\n", ctx)
 		name := r.URL.Query().Get("name")
 		args := r.URL.Query().Get("args")
+		incomeAddr := r.URL.Query().Get("incomeAddr")
 
 		if name == "" {
 			// no command in request
@@ -57,18 +56,17 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 		} else if _, ok := taskBuilder.TaskTable[name]; !ok {
 			io.WriteString(w, "Unknowen command: "+name+" "+args)
 		} else {
-			newTask := it.gen.NewTask(name, strings.Fields(args))
+			newTask := it.gen.NewTask(name, strings.Fields(args), incomeAddr)
 
 			log.Printf("Task: %v", newTask)
-			c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
+			ret := make(chan string)
 
-			out := <-it.ret
-
-			if taskBuilder.TaskTable[name].Type == taskBuilder.IntTaskType {
-				out = out + "\n"
-			}
-
+			c <- taskBuilder.NewTaskOut(newTask, nil, ret)
+			//go func() {
+			out := <-ret
 			io.WriteString(w, fmt.Sprintf(`%s`, out))
+			//}()
+
 		}
 	})
 
