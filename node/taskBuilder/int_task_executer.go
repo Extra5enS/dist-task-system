@@ -31,4 +31,7 @@ var IntTaskExecutionTable = map[string](func(t Task) (string, error)){
 		}
 		return fmt.Sprintf("%v", sum), nil
 	},
+	"nothing": func(t Task) (string, error) {
+		return "", nil
+	},
 }

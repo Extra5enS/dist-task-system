@@ -11,33 +11,39 @@ type TaskExecutor interface {
 	Exec(t Task) (string, error)
 }
 
-func TaskExec(t TaskOut, o outputer.Outputer) {
+func (tw TaskWorker) TaskExec(t TaskOut) {
 	go func() {
 		var te TaskExecutor
 		switch TaskTable[t.T.Name].Type {
 		case IntTaskType:
 			te = IntTaskExecutor{}
 		case ExtTaskType:
-			te = NewExtTaskExecutor(o)
+			te = NewExtTaskExecutor(tw.o)
 		case SysTaskType:
 			te = SysTaskExecutor{}
 		}
-		out, e := te.Exec(t.T)
-		t.ReturnAns(out, e)
+		outString, e := te.Exec(t.T)
+		if e != nil {
+			tw.out <- Ans{Out: e.Error(), RetChan: t.Ret, AnsTask: t.T}
+		} else {
+			tw.out <- Ans{Out: outString, RetChan: t.Ret, AnsTask: t.T}
+		}
 	}()
 }
 
 //
 type TaskWorker struct {
 	in      chan TaskOut
+	out     chan Ans
 	o       outputer.Outputer
 	end     chan interface{}
 	counter utilities.Counter
 }
 
-func NewTaskWorker(in chan TaskOut, end chan interface{}, limit int, o outputer.Outputer) TaskWorker {
+func NewTaskWorker(in chan TaskOut, out chan Ans, end chan interface{}, limit int, o outputer.Outputer) TaskWorker {
 	return TaskWorker{
 		in:      in,
+		out:     out,
 		o:       o,
 		end:     end,
 		counter: utilities.NewCounter(limit),
@@ -49,10 +55,14 @@ func (tw TaskWorker) Start() {
 		select {
 		case task := <-tw.in:
 			if task.E == nil {
-				TaskExec(task, tw.o)
+				//fmt.Println("taskOut:", task)
+				tw.TaskExec(task)
 			} else {
 				log.Print(task.E)
 			}
+		case asn := <-tw.out:
+			//fmt.Println("Ans:", asn)
+			asn.RetChan <- asn.Out
 		case <-tw.end:
 			if tw.counter.IsFinish() {
 				return

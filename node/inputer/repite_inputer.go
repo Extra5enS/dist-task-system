@@ -1,10 +1,8 @@
 package inputer
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
+	"time"
 
 	"github.com/Extra5enS/dist-task-system/node/taskBuilder"
 )
@@ -12,33 +10,34 @@ import (
 type inputerRepite struct {
 	gen taskBuilder.TaskGenerator
 	ret chan string
+
+	command []string
+	t       time.Duration
 }
 
-func NewInputeRepite() inputerTerm {
-	return inputerTerm{
-		gen: taskBuilder.NewTaskGenerator(),
-		ret: make(chan string),
-	}
+func NewInputeRepite(command []string, t time.Duration) (inputerRepite, error) {
+	return inputerRepite{
+		gen:     taskBuilder.NewTaskGenerator(),
+		ret:     make(chan string),
+		command: command,
+		t:       t,
+	}, nil
 }
 
 func (it inputerRepite) subStart(c chan taskBuilder.TaskOut, end chan interface{}) {
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("user> ")
-	for scanner.Scan() {
-		// scan
-		command := strings.Split(scanner.Text(), " ")
-
-		if _, ok := taskBuilder.TaskTable[command[0]]; !ok {
-			fmt.Printf("Unknowen task %s\n", command[0])
+	for _ = range time.Tick(it.t) {
+		if _, ok := taskBuilder.TaskTable[it.command[0]]; !ok {
+			fmt.Printf("Unknowen task %s\n", it.command[0])
 			continue
 		}
-		newTask := it.gen.NewTask(command[0], command[1:], "")
-		c <- taskBuilder.NewTaskOut(newTask, nil, it.ret)
+		newTask := it.gen.NewTask(it.command[0], it.command[1:], "")
+		ret := make(chan string)
+		c <- taskBuilder.NewTaskOut(newTask, nil, ret)
 		// wait answer
-		out := <-it.ret
+		out := <-ret
 		// print result
 		fmt.Print(out)
-		if taskBuilder.TaskTable[command[0]].Type != taskBuilder.SysTaskType {
+		if taskBuilder.TaskTable[it.command[0]].Type != taskBuilder.SysTaskType {
 			fmt.Println()
 		}
 	}

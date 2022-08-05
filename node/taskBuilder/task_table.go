@@ -61,6 +61,13 @@ func (t TaskOut) ReturnAns(ans string, e error) {
 	}
 }
 
+type Ans struct {
+	Out     string
+	RetChan chan string
+
+	AnsTask Task
+}
+
 type TaskInfo struct {
 	Name string
 	Type TaskType

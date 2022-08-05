@@ -73,7 +73,7 @@ func (oh outputerHttp) Get(name string, args []string, incomeAddr string) chan s
 				return
 			}
 			//fmt.Println(`{"` + addr + `":"` + string(resBody) + `"}`)
-			subOut <- `{"` + addr + `":"` + string(resBody) + `"}`
+			subOut <- string(resBody)
 			//gw.Done()
 		}(addr)
 		count++
@@ -100,6 +100,7 @@ func (oh outputerHttp) GetByIp(name string, args []string, incomeAddr, addr stri
 	go func(addr string) {
 		requestURL := fmt.Sprintf("http://%s/?name=%s&args=%s&incomeAddr=%s", addr, name, strings.Join(args, "+"), incomeAddr)
 		req, err := http.NewRequest(http.MethodGet, requestURL, nil)
+
 		if err != nil {
 			log.Printf("%v\n", err)
 			oh.errorAddrs <- addr
@@ -118,8 +119,11 @@ func (oh outputerHttp) GetByIp(name string, args []string, incomeAddr, addr stri
 			oh.out <- `{"` + addr + `":"error"}`
 			return
 		}
-		//fmt.Println(`{"` + addr + `":"` + string(resBody) + `"}`)
-		oh.out <- `{"` + addr + `":"` + string(resBody) + `"}`
+		if addr == oh.OwnAddr() {
+			oh.out <- `{"` + addr + `":"` + string(resBody) + `"}`
+		} else {
+			oh.out <- string(resBody)
+		}
 	}(addr)
 	return oh.out
 }

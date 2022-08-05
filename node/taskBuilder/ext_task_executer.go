@@ -49,13 +49,10 @@ var ExtTaskExecutionTable = map[string](func(o outputer.Outputer, t Task) (strin
 		//fmt.Printf("%v %v\n", o.OwnAddr(), anss)
 		return strings.Join(anss, " "), nil
 	},
-
 	"ping": func(o outputer.Outputer, t Task) (string, error) {
-		out := o.Get("foreach", t.Args[1:], t.IncomeAddr)
+		out := o.GetByIp(t.Args[0], t.Args[1:], t.IncomeAddr, o.OwnAddr())
 		anss := make([]string, 0)
-		for i := 0; i < o.AnsCount(); i++ {
-			anss = append(anss, <-out)
-		}
+		anss = append(anss, <-out)
 		return strings.Join(anss, " "), nil
 	},
 }
