@@ -62,10 +62,9 @@ func (it inputerHttp) subStart(c chan taskBuilder.TaskOut, end chan interface{})
 			ret := make(chan string)
 
 			c <- taskBuilder.NewTaskOut(newTask, nil, ret)
-			//go func() {
+
 			out := <-ret
 			io.WriteString(w, fmt.Sprintf(`%s`, out))
-			//}()
 
 		}
 	})

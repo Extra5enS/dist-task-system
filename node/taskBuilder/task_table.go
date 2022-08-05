@@ -30,7 +30,7 @@ type Task struct {
 	IncomeAddr string
 }
 
-func (tg TaskGenerator) NewTask(name string, args []string, addr string) Task {
+func (tg *TaskGenerator) NewTask(name string, args []string, addr string) Task {
 	t := Task{
 		Name: name,
 		Args: args,
@@ -80,4 +80,6 @@ var TaskTable = map[string]TaskInfo{
 	"export":  {"export", SysTaskType, []string{}},
 	"env":     {"env", SysTaskType, []string{}},
 	"foreach": {"foreach", ExtTaskType, []string{}},
+	"ping":    {"ping", ExtTaskType, []string{}},
+	"nothing": {"nothing", IntTaskType, []string{}},
 }
